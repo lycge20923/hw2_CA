@@ -5,34 +5,43 @@
 __start:
   li a0, 5   # ecall code
   ecall 
-  
-  # determine s0=0 r1
-  addi t0,x0,1
-  bge a0,t0,FUNC
-  beq a0,t0,ONE
-  add s1,x0,x0
-  beq x0,x0,FINAL
-ONE:
-  addi s1,x0,1
-  beq x0,x0,FINAL
-  addi s1,x0,1
-  beq x0,x0,FINAL
-  
-  
-FUNC:
-  addi sp,sp,-8
-  sw s0,0(sp)
-  sw ra,4(sp)
-  jal L1
-  
+  addi t3,x0,2
+  blt a0,t3,TOEXIT
+  jal ra,FUNC
 
-
-L1:
-  addi s0,s0,-1
-  jal func  
-  
-
-FINAL:  
-  li a0, 1
-  mv a1, s1 #0xa # integer to print
+EXIT:
+  li a0, 1 
   ecall
+  li a0, 10
+  ecall
+
+TOEXIT: 
+  add a1,a0,x0
+  beq x0,x0,EXIT
+
+FUNC:
+  addi sp,sp,-24
+  sw ra,0(sp)  
+  sw a0,8(sp) 
+  sw s0,16(sp)  
+  addi t1,x0,1
+  slt t0,t1,a0 
+  bne t0,x0,L1
+  add a1,s1,a0 
+  addi sp,sp,24
+  jalr x0,0(ra)
+  
+L1:
+  addi a0,a0,-1 
+  jal ra,FUNC
+  mv s0,a1
+  addi a0,a0,-1 
+  jal ra,FUNC
+  add s0,s0,s0
+  add a1,a1,s0 
+  lw ra,0(sp)
+  lw a0,8(sp) #a0
+  lw s0,16(sp)
+  addi sp,sp,24
+  jalr x0,0(ra)
+  
