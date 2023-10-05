@@ -43,27 +43,24 @@ print_list:
 #  TODO:Print out the linked list          #
 #                                          #
 ############################################
-        # 4(a0):store first ele addr
-        # 0(a0):store first ele
-        #-4(a0):store second addr
-        #-8(a0):store second ele
-        #....
-        #read until the addr become 0
-        #addi t1,a0,4
-        #lw a1,0(t1)
-        add t1,x0,a0 
-        addi sp,sp,-4
+        add t1,ra,x0        
+loop1:
+        addi sp,sp,-8
+        sw a0,4(sp)
         sw ra,0(sp)
-        
-        lw t1,4(a0) #store the next node's "value"'s addr
-        lw a0,0(a0) #prepare to print the int
-        jal print_int   
-        add a0,t1,x0
+        lw a0,4(a0) #store the next node's "value"'s addr
+        addi t2,t2,1
+        bne a0,x0,loop1
+loop2:
+        addi t2,t2,-1
+        lw a0,4(sp)
         lw ra,0(sp)
-        addi sp,sp,4
-        bne t1,x0,print_list        
+        addi sp,sp,8
+        lw a0,0(a0) #prepare to print the int
+        jal print_int 
+        bne t2,x0,loop2
+        add ra,t1,x0
         ret
-
 __start:
         ### save ra、s0 ###                                   
         addi    sp, sp, -16
